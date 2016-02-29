@@ -6,6 +6,7 @@
 # If all stack up on different rod, win
 class TowerOfHanoi
 
+	# Initiate number of pieces, and board
 	def initialize number_of_pieces
 		@number_of_pieces= number_of_pieces
 		@moves
@@ -17,45 +18,54 @@ class TowerOfHanoi
 		$win = false
 	end
 
-
+	# check if input is correct or is exit
 	def check_input
 		inputs = false
 		while inputs == false
 
-			@moves = nil
 			@moves = gets.chomp
+			temp_move = @moves.split(" ")
+			if @moves == "quit"
+				exit
 
-			if (@moves =~ /\d \d/) && @moves[0].to_i.between?(1,3) && @moves[-1].to_i.between?(1,3)
+			elsif temp_move[0].to_i.between?(1,3) && temp_move[-1].to_i.between?(1,3)
 				inputs = true
+			else
+				puts "Wrong Move !"
 			end
 		end
 		
 	end
 	
 
-# Check : There is a piece to move from, the place to move to should be empty or > than the piece moving
 	def move_pieces
 
+		# split user input, and create variables for starting and ending place, and the piece
 		temp_moves = @moves.split(" ")
 		temp_moves.map! {|move| move.to_i - 1}
 		move_from = temp_moves[0]
 		move_to = temp_moves[-1]
 		moving_piece = @board_game[move_from].last
 
+		# Check if can move
 		if @board_game[move_from].empty? || !@board_game[move_to].empty? && @board_game[move_to].last <  moving_piece
 			puts ""
 			puts "Cannot do this move !"
 
 			play
 
+			# Move
 		else
 			@board_game[move_from].pop
-
 			@board_game[move_to].push moving_piece
+
+			puts "you moved from #{move_from} to #{move_to}"
+
 		end
 	end
 
-					# [[3,2,1], [], []]
+	# Loop through each row and check the value, then check and print according to the value
+	# Until Bottom of the Board_game
 
 	def render_board
 		puts ""
@@ -82,23 +92,23 @@ class TowerOfHanoi
 	end
 
 
-
-
+	# Check if Win
 	def win
 		solution = (1..@number_of_pieces).to_a.reverse
 		if @board_game[1] == solution || @board_game[2] == solution
 			render_board
-			puts "You Win !"
+			puts "\nYou Win !\n"
 			exit
 		end
 	end
 
+	# Launch the game
 	def play
 		while true
 			render_board
 
 			puts ""
-			puts "What is your move? example : 1 2"
+			puts "What is your move? example : 1 2  /  \"quit\" to exit"
 
 			check_input
 
