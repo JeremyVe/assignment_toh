@@ -25,7 +25,7 @@ class TowerOfHanoi
 			@moves = nil
 			@moves = gets.chomp
 
-			if (@moves =~ /\d.\d/) && @moves[0].to_i.between?(1,3) && @moves[-1].to_i.between?(1,3)
+			if (@moves =~ /\d \d/) && @moves[0].to_i.between?(1,3) && @moves[-1].to_i.between?(1,3)
 				inputs = true
 			end
 		end
@@ -55,30 +55,30 @@ class TowerOfHanoi
 		end
 	end
 
-
+					# [[3,2,1], [], []]
 
 	def render_board
-		printing_render = ["#####", " ### ", "  #  "]
 		puts ""
-		3.times do |row|
-			print " "
-			@board_game.each do |i|
-				case i[2-row]
-				when 1
-					print printing_render[2]
-				when 2
-					print printing_render[1]
-				when 3
-					print printing_render[0]
-				else
-					print "     "
+		@number_of_pieces.times do |row|
+			print "  "
+			@board_game.each do |col|
+				current_item = @number_of_pieces-1-row
+
+				if col[current_item] == 1
+					print "#".center(@number_of_pieces*2-1)
+				elsif col[current_item].nil?
+					print " " + "  " * (@number_of_pieces-1)
+				else 
+					print ("#" + "##" * (col[current_item]-1)).center(@number_of_pieces*2-1)
 				end
 				print " "
 			end
 			print "\n"
 		end
-		print " __|_____|_____|__\n"
-		print " __1__|__2__|__3__\n"
+		print " |" + ("_" * (@number_of_pieces*2-1) + "|") * 3 + "\n"
+		print " |"
+		(1..3).each {|number| print "_" * (@number_of_pieces-1) + "#{number}" + "_" * (@number_of_pieces-1) + "|"}
+		print "\n"
 	end
 
 
@@ -96,7 +96,7 @@ class TowerOfHanoi
 	def play
 		while true
 			render_board
-			
+
 			puts ""
 			puts "What is your move? example : 1 2"
 
@@ -110,5 +110,5 @@ class TowerOfHanoi
 
 end
 
-t = TowerOfHanoi.new(3)
+t = TowerOfHanoi.new(5)
 t.play
