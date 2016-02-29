@@ -4,87 +4,119 @@
 # The player can move 1 disk onto a road only if no smaller down it
 
 # If all stack up on different rod, win
+class TowerOfHanoi
 
-	
-board_game = [[3,2,1], [], []]
-win = false
+	# Initiate number of pieces, and board
+	def initialize number_of_pieces
+		@number_of_pieces= number_of_pieces
+		@moves
+		@board_game =[[], [], []]
 
-
-def play board_game = board_game
-	render board_game
-	puts ""
-	puts "What is your move? example : 1 2"
-	moves = nil
-	moves = gets.chomp
-	
-	unless (moves =~ /\d.\d/) && !moves.nil? && moves[0].to_i.between?(1,3) && moves[-1].to_i.between?(1,3)
-		play board_game
-	end
-
-	moves = moves.split(" ")
-	moves.map! {|move| move.to_i - 1}
-	move_from = moves[0]
-	move_to = moves[1]
-	moving_piece = board_game[move_from].last
-
-	if board_game[move_from].empty? || !board_game[move_to].empty? && board_game[move_to].last <  moving_piece
-		puts ""
-		puts "Cannot do this move !"
-
-		play board_game
-
-	else
-		board_game[move_from].pop
-
-		board_game[move_to].push moving_piece
-	end
-
-	win board_game
-
-
-end
-
-# Check : There is a piece to move from, the place to move to should be empty or > than the piece moving
-
-
-def render board_game
-	printing_render = ["#####", " ### ", "  #  "]
-	puts ""
-	3.times do |row|
-		print " "
-		board_game.each do |i|
-			case i[2-row]
-			when 1
-				print printing_render[2]
-			when 2
-				print printing_render[1]
-			when 3
-				print printing_render[0]
-			else
-				print "     "
-			end
-			print " "
+		(@number_of_pieces).downto(1) do |i|
+			@board_game[0] <<  i
 		end
+	end
+
+	# check if input is correct or is exit
+	def check_input
+		inputs = false
+		while inputs == false
+
+			@moves = gets.chomp
+			temp_move = @moves.split(" ")
+			if @moves == "quit"
+				exit
+
+			elsif temp_move[0].to_i.between?(1,3) && temp_move[-1].to_i.between?(1,3)
+				inputs = true
+			else
+				puts "Wrong Move !"
+			end
+		end
+		
+	end
+	
+
+	def move_pieces
+
+		# split user input, and create variables for starting and ending place, and the piece
+		move_array = @moves.split(" ")
+		move_array.map! {|move| move.to_i - 1}
+		move_from = move_array[0]
+		move_to = move_array[-1]
+		moving_piece = @board_game[move_from].last
+
+		# Check if can move
+		if @board_game[move_from].empty? || !@board_game[move_to].empty? && @board_game[move_to].last <  moving_piece
+			puts "\nCannot do this move !"
+
+			play
+
+			# Move
+		else
+			@board_game[move_from].pop
+			@board_game[move_to].push moving_piece
+
+			puts "you moved from #{move_from} to #{move_to}"
+
+		end
+	end
+
+	# Loop through each row and check the value, then check and print according to the value
+	# Until Bottom of the Board_game
+
+	def render_board
+		puts ""
+		@number_of_pieces.times do |row|
+			print "  "
+			@board_game.each do |col|
+				current_item = @number_of_pieces-1-row
+
+				if col[current_item] == 1
+					print "#".center(@number_of_pieces*2-1)
+				elsif col[current_item].nil?
+					print " " + "  " * (@number_of_pieces-1)
+				else 
+					print ("#" + "##" * (col[current_item]-1)).center(@number_of_pieces*2-1)
+				end
+				print " "
+			end
+			print "\n"
+		end
+		print " |" + ("_" * (@number_of_pieces*2-1) + "|") * 3 + "\n"
+		print " |"
+		(1..3).each {|number| print "_" * (@number_of_pieces-1) + "#{number}" + "_" * (@number_of_pieces-1) + "|"}
 		print "\n"
 	end
-	print " __|_____|_____|__\n"
-	print " __1__|__2__|__3__\n"
-end
 
 
-
-
-def win board_game
-	if board_game[1] == [3,2,1] || board_game[2] == [3,2,1]
-		render board_game
-		puts "You Win !"
-		exit
-		win = true
+	# Check if Win
+	def win
+		solution = (1..@number_of_pieces).to_a.reverse
+		if @board_game[1] == solution || @board_game[2] == solution
+			render_board
+			puts "\nYou Win !\n"
+			exit
+		end
 	end
+
+	# Launch the game
+	def play
+		while true
+			render_board
+
+			puts ""
+			puts "What is your move? example : 1 2  /  \"quit\" to exit"
+
+			check_input
+
+			move_pieces
+
+			win
+		end
+	end
+
 end
 
-
-while win == false
-	play board_game
-
-end
+t = TowerOfHanoi.new(10)
+t.play
